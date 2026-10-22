@@ -6,6 +6,8 @@ GatherKit helps community organisers turn an event idea into an editable plan, f
 
 [Open the app on Vercel](https://gatherkit-eta.vercel.app/) · [Watch the two-minute demo](https://gatherkit-eta.vercel.app/demo.html) · [Download the video](https://gatherkit-eta.vercel.app/gatherkit-demo.mp4)
 
+The player uses a smaller 720p copy for faster loading. The 1080p download remains available. Both versions are exactly two minutes, captioned and without audio.
+
 ![GatherKit showing the fictional event and imported copy awaiting review](docs/gatherkit-workspace.png)
 
 Built for the Event Autopilot track of the Grok Bot Community Engineering London Hackathon on 22 October 2026. The included After Hours Club example is a **fictional London community and event**. Its venue, contacts, volunteers and costs are illustrative; it is not a live invitation.
