@@ -4,7 +4,7 @@
 
 GatherKit helps community organisers turn an event idea into an editable plan, five promotional drafts and a poster. Review the details, approve the assets and download a pack for your own publishing workflow.
 
-[Open the app](https://masterasnackin.github.io/gatherkit/) · [Watch the demo](https://masterasnackin.github.io/gatherkit/demo.html)
+[Open the app on Vercel](https://gatherkit-eta.vercel.app/) · [Watch the two-minute demo](https://gatherkit-eta.vercel.app/demo.html) · [Download the video](https://gatherkit-eta.vercel.app/gatherkit-demo.mp4)
 
 ![GatherKit showing the fictional event and imported copy awaiting review](docs/gatherkit-workspace.png)
 
@@ -35,6 +35,8 @@ npm run preview
 ```
 
 The `dist/` directory is a static website. The included GitHub Actions workflow runs checks and builds the app before deploying `main` to GitHub Pages. In a fork, enable Pages with GitHub Actions as its source.
+
+The public Vercel site is a separate deployment of the static build, including the demo player and video. GitHub pushes do not automatically update Vercel; deploy a fresh `dist/` build to update that site.
 
 ## The organiser workflow
 
