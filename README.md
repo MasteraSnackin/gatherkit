@@ -24,7 +24,7 @@ npm run build
 npm run preview
 ```
 
-The `dist/` directory can be hosted as a static website. Deployment and public availability are separate from a successful local build. This repository does not automatically deploy or submit itself anywhere.
+The `dist/` directory can be hosted as a static website. This repository includes a GitHub Pages workflow that runs the tests and production build before deploying changes on `main`. Enable Pages with GitHub Actions as the source in your fork to use it. The app does not submit itself to the hackathon.
 
 ## One complete organiser workflow
 
