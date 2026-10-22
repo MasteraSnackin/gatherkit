@@ -1,0 +1,35 @@
+GatherKit — two-minute captioned walkthrough
+
+Saved screens of a fictional event. Real Grok web response was returned manually to GatherKit; the app does not authenticate pasted reply sources or make a direct API call.
+
+Start with a clearly labelled fictional event brief.
+
+Keep the audience, tone and event details together.
+
+Local templates create the first pack and run sheet.
+
+Proposed timings and unassigned roles stay visible.
+
+Prepare a prompt from the event brief in GatherKit.
+
+Send the prepared prompt through Grok on the web.
+
+Grok returns suggested copy for this event.
+
+Copy the structured reply back to GatherKit.
+
+Import the returned copy and review it in context.
+
+Copy approvals reset. Review every returned draft.
+
+Code-generated artwork uses the event details and accent.
+
+Review the poster before downloading SVG or PNG.
+
+Budget figures remain estimates until confirmed.
+
+The rota shows assigned people and roles still open.
+
+Review the returned copy, then approve each asset.
+
+Download reusable files. You decide when to publish.

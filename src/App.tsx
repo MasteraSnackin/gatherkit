@@ -338,10 +338,10 @@ export default function App() {
   function openGrokHandoff() {
     attempt(() => {
       if (!pack)
-        throw new Error("Create an event pack before drafting with Grok Bot.");
+        throw new Error("Create an event pack before drafting with Grok.");
       if (isPackStale(brief, pack))
         throw new Error(
-          "Your brief has changed. Regenerate the pack before starting a Grok Bot handoff.",
+          "Your brief has changed. Regenerate the pack before starting a Grok handoff.",
         );
       if (hasErrors)
         throw new Error(
@@ -358,7 +358,7 @@ export default function App() {
       await navigator.clipboard.writeText(grokPrompt);
       setGrokError(null);
       setNotice(
-        "Event brief prompt copied. Paste it into Grok Bot when you are ready.",
+        "Event brief prompt copied. Paste it into your signed-in Grok chat when you are ready.",
       );
     } catch {
       setGrokError(
@@ -1379,7 +1379,7 @@ export default function App() {
                         }
                       >
                         <Sparkles size={16} />
-                        Draft with Grok Bot
+                        Draft with Grok
                       </button>
                       <button
                         className="button secondary"
@@ -1395,9 +1395,9 @@ export default function App() {
                   <div className="grok-handoff-note">
                     <Clipboard size={15} />
                     <p>
-                      Optional desktop handoff: copy your brief into Grok Bot,
-                      then paste its reply here. You review and approve every
-                      imported draft. Provider attribution is unverified.
+                      Optional chat handoff: copy your brief into Grok on the web
+                      or in Grok Bot, then paste its reply here. You review and
+                      approve every imported draft. Provider attribution is unverified.
                     </p>
                   </div>
                 )}
@@ -2295,14 +2295,14 @@ export default function App() {
       )}
       {dialog === "grok" && (
         <Modal
-          title="Draft with Grok Bot. Keep your final say."
-          description="A manual handoff between this workspace and your signed-in desktop app. GatherKit does not connect to or verify the app."
+          title="Draft with Grok. Keep your final say."
+          description="A manual handoff with your signed-in Grok chat, on the web or in Grok Bot. GatherKit has no direct API connection and does not verify the source of pasted replies."
           wide
           onClose={() => setDialog(null)}
         >
           <div className="grok-handoff-body">
             <div className="grok-handoff-intro">
-              <span className="soft-tag">Manual desktop workflow</span>
+              <span className="soft-tag">Manual chat handoff</span>
               <span>
                 {brief.community} · {brief.name}
               </span>
@@ -2318,7 +2318,7 @@ export default function App() {
                   <p>
                     The prompt includes the event details, tone and required
                     reply format. Check the information before sharing it with
-                    the desktop app.
+                    your Grok chat.
                   </p>
                   <div className="grok-step-actions">
                     <button
@@ -2350,7 +2350,7 @@ export default function App() {
                       Read or manually copy the prompt <ChevronDown size={14} />
                     </summary>
                     <label className="sr-only" htmlFor="grok-prompt">
-                      Event brief prompt for Grok Bot
+                      Event brief prompt for Grok
                     </label>
                     <textarea
                       id="grok-prompt"
@@ -2366,11 +2366,11 @@ export default function App() {
               <section className="grok-handoff-step">
                 <span className="grok-step-number">02</span>
                 <div>
-                  <h3>Use your signed-in Grok Bot desktop app</h3>
+                  <h3>Use your signed-in Grok chat</h3>
                   <p>
-                    Paste the prompt into a new conversation. Ask for the
-                    structured JSON reply, then copy the complete reply back
-                    here. You control what is sent to the app.
+                    Open a new conversation in Grok on the web or in Grok Bot
+                    and paste the prompt. Ask for the structured JSON reply,
+                    then copy the complete reply back here. You control what is sent.
                   </p>
                   <div className="grok-boundary-note">
                     No sign-in details or API keys are needed in GatherKit. A
@@ -2388,7 +2388,7 @@ export default function App() {
                     “Use these drafts”.
                   </p>
                   <label className="sr-only" htmlFor="grok-reply">
-                    Structured JSON reply from Grok Bot
+                    Structured JSON reply from Grok
                   </label>
                   <textarea
                     id="grok-reply"

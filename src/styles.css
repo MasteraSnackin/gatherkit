@@ -3490,7 +3490,7 @@ h1 {
   background: #a26344;
 }
 
-/* Human-assisted Grok Bot desktop drafting handoff. */
+/* Human-assisted Grok web or Grok Bot drafting handoff. */
 .promotion-actions {
   display: flex;
   flex-wrap: wrap;
