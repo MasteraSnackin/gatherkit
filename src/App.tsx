@@ -49,6 +49,13 @@ import {
   downloadPosterPng,
 } from "./lib/export";
 import {
+  buildGrokPrompt,
+  parseGrokReply,
+  applyGrokReply,
+  GROK_IMPORT_NOTICE,
+  type DraftHandoffReply,
+} from "./lib/grok";
+import {
   loadWorkspace,
   saveWorkspace,
   parseWorkspace,
@@ -57,7 +64,7 @@ import {
 } from "./lib/storage";
 
 type Tab = "overview" | "run-sheet" | "promotion" | "team";
-type Dialog = "brief" | "export" | "regenerate" | "new" | null;
+type Dialog = "brief" | "export" | "regenerate" | "new" | "grok" | null;
 const tabs: { id: Tab; label: string }[] = [
   { id: "overview", label: "Overview" },
   { id: "run-sheet", label: "Run sheet" },
@@ -232,7 +239,14 @@ export default function App() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [editingRunSheet, setEditingRunSheet] = useState(false);
   const [pngBusy, setPngBusy] = useState(false);
+  const [grokPrompt, setGrokPrompt] = useState("");
+  const [grokReplyText, setGrokReplyText] = useState("");
+  const [grokPreview, setGrokPreview] = useState<DraftHandoffReply | null>(
+    null,
+  );
+  const [grokError, setGrokError] = useState<string | null>(null);
   const importRef = useRef<HTMLInputElement>(null);
+  const grokPreviewRef = useRef<HTMLDivElement>(null);
   const brief = workspace.brief;
   const pack = workspace.pack;
   const stale = Boolean(pack && isPackStale(brief, pack));
@@ -293,6 +307,10 @@ export default function App() {
     const timer = window.setTimeout(() => setNotice(null), 5000);
     return () => window.clearTimeout(timer);
   }, [notice]);
+  useEffect(() => {
+    if (grokPreview)
+      grokPreviewRef.current?.scrollIntoView({ block: "nearest" });
+  }, [grokPreview]);
   function updateBrief<K extends keyof EventBrief>(
     key: K,
     value: EventBrief[K],
@@ -316,6 +334,72 @@ export default function App() {
       const next = action(pack);
       setWorkspace((current) => ({ ...current, pack: next }));
     });
+  }
+  function openGrokHandoff() {
+    attempt(() => {
+      if (!pack)
+        throw new Error("Create an event pack before drafting with Grok Bot.");
+      if (isPackStale(brief, pack))
+        throw new Error(
+          "Your brief has changed. Regenerate the pack before starting a Grok Bot handoff.",
+        );
+      if (hasErrors)
+        throw new Error(
+          "Complete the required event details before creating the drafting prompt.",
+        );
+      setGrokPrompt(buildGrokPrompt(brief));
+      setGrokPreview(null);
+      setGrokError(null);
+      setDialog("grok");
+    });
+  }
+  async function copyGrokPrompt() {
+    try {
+      await navigator.clipboard.writeText(grokPrompt);
+      setGrokError(null);
+      setNotice(
+        "Event brief prompt copied. Paste it into Grok Bot when you are ready.",
+      );
+    } catch {
+      setGrokError(
+        "Clipboard access is unavailable. Expand the prompt below to select and copy it, or download the prompt file.",
+      );
+    }
+  }
+  function previewGrokReply() {
+    try {
+      setGrokError(null);
+      if (!pack || isPackStale(brief, pack))
+        throw new Error(
+          "The current pack no longer matches your brief. Regenerate it and copy a fresh prompt before importing a reply.",
+        );
+      setGrokPreview(parseGrokReply(grokReplyText, brief));
+    } catch (error) {
+      setGrokPreview(null);
+      setGrokError(cleanError(error));
+    }
+  }
+  function useGrokDrafts() {
+    try {
+      if (!pack || !grokPreview)
+        throw new Error(
+          "Preview the structured reply before replacing your drafts.",
+        );
+      const reply = parseGrokReply(grokReplyText, brief);
+      const next = applyGrokReply(brief, pack, reply);
+      setWorkspace((current) => ({ ...current, pack: next }));
+      setGrokPreview(null);
+      setGrokReplyText("");
+      setGrokError(null);
+      setDialog(null);
+      setActiveAsset("event-page");
+      setTab("promotion");
+      setNotice(
+        "Five imported drafts are ready for your review. Their source is not independently verified.",
+      );
+    } catch (error) {
+      setGrokError(cleanError(error));
+    }
   }
   function generate() {
     attempt(() => {
@@ -803,7 +887,11 @@ export default function App() {
                           <span className="mini-spark">
                             <Sparkles size={12} />
                           </span>
-                          Local template engine · no AI service connected
+                          {pack?.assets.some(
+                            (asset) => asset.origin === "imported",
+                          )
+                            ? "Local event pack · imported copy for review"
+                            : "Local template engine · no AI service connected"}
                         </div>
                       </div>
                       <div className="gathering-art" aria-hidden="true">
@@ -1085,7 +1173,7 @@ export default function App() {
                         An estimate from your assumptions, not measured time
                         saved.
                         {pack
-                          ? ` Actual pack assembly: ${pack.generationMs.toFixed(1)} ms.`
+                          ? ` Local template assembly: ${pack.generationMs.toFixed(1)} ms.`
                           : " Generate a pack to measure assembly time."}
                       </small>
                     </section>
@@ -1279,15 +1367,40 @@ export default function App() {
                     </p>
                   </div>
                   {pack && (
-                    <button
-                      className="button secondary"
-                      onClick={requestGenerate}
-                    >
-                      <RefreshCw size={16} />
-                      Regenerate
-                    </button>
+                    <div className="promotion-actions">
+                      <button
+                        className="button primary"
+                        onClick={openGrokHandoff}
+                        disabled={stale || hasErrors}
+                        title={
+                          stale
+                            ? "Regenerate the pack to match your updated brief first"
+                            : undefined
+                        }
+                      >
+                        <Sparkles size={16} />
+                        Draft with Grok Bot
+                      </button>
+                      <button
+                        className="button secondary"
+                        onClick={requestGenerate}
+                      >
+                        <RefreshCw size={16} />
+                        Regenerate
+                      </button>
+                    </div>
                   )}
                 </div>
+                {pack && (
+                  <div className="grok-handoff-note">
+                    <Clipboard size={15} />
+                    <p>
+                      Optional desktop handoff: copy your brief into Grok Bot,
+                      then paste its reply here. You review and approve every
+                      imported draft. Provider attribution is unverified.
+                    </p>
+                  </div>
+                )}
                 {!pack ? (
                   <EmptyState
                     title="Your next gathering deserves a good invitation."
@@ -1324,9 +1437,11 @@ export default function App() {
                             <div>
                               <h3>{selectedAsset.title}</h3>
                               <p>
-                                {selectedAsset.edited
-                                  ? "Edited by you"
-                                  : "Generated from your brief"}{" "}
+                                {selectedAsset.origin === "imported"
+                                  ? "Imported copy · source not verified"
+                                  : selectedAsset.edited
+                                    ? "Edited by you"
+                                    : "Generated from your brief"}{" "}
                                 · {selectedAsset.body.length.toLocaleString()}{" "}
                                 characters
                               </p>
@@ -2174,6 +2289,212 @@ export default function App() {
               onClick={() => setDialog(null)}
             >
               Done
+            </button>
+          </div>
+        </Modal>
+      )}
+      {dialog === "grok" && (
+        <Modal
+          title="Draft with Grok Bot. Keep your final say."
+          description="A manual handoff between this workspace and your signed-in desktop app. GatherKit does not connect to or verify the app."
+          wide
+          onClose={() => setDialog(null)}
+        >
+          <div className="grok-handoff-body">
+            <div className="grok-handoff-intro">
+              <span className="soft-tag">Manual desktop workflow</span>
+              <span>
+                {brief.community} · {brief.name}
+              </span>
+              {brief.sample && (
+                <span className="tag sample-tag">Fictional demo</span>
+              )}
+            </div>
+            <div className="grok-handoff-steps">
+              <section className="grok-handoff-step">
+                <span className="grok-step-number">01</span>
+                <div>
+                  <h3>Copy your event brief prompt</h3>
+                  <p>
+                    The prompt includes the event details, tone and required
+                    reply format. Check the information before sharing it with
+                    the desktop app.
+                  </p>
+                  <div className="grok-step-actions">
+                    <button
+                      className="button secondary"
+                      onClick={() => void copyGrokPrompt()}
+                    >
+                      <Clipboard size={15} />
+                      Copy prompt
+                    </button>
+                    <button
+                      className="text-button"
+                      onClick={() =>
+                        attempt(() => {
+                          downloadText(
+                            `${slug(brief.name)}-grok-prompt.txt`,
+                            grokPrompt,
+                            "text/plain",
+                          );
+                          setNotice("Drafting prompt downloaded.");
+                        })
+                      }
+                    >
+                      <ArrowDownToLine size={14} />
+                      Download prompt
+                    </button>
+                  </div>
+                  <details className="grok-prompt-details">
+                    <summary>
+                      Read or manually copy the prompt <ChevronDown size={14} />
+                    </summary>
+                    <label className="sr-only" htmlFor="grok-prompt">
+                      Event brief prompt for Grok Bot
+                    </label>
+                    <textarea
+                      id="grok-prompt"
+                      readOnly
+                      value={grokPrompt}
+                      rows={8}
+                      spellCheck={false}
+                      onFocus={(event) => event.currentTarget.select()}
+                    />
+                  </details>
+                </div>
+              </section>
+              <section className="grok-handoff-step">
+                <span className="grok-step-number">02</span>
+                <div>
+                  <h3>Use your signed-in Grok Bot desktop app</h3>
+                  <p>
+                    Paste the prompt into a new conversation. Ask for the
+                    structured JSON reply, then copy the complete reply back
+                    here. You control what is sent to the app.
+                  </p>
+                  <div className="grok-boundary-note">
+                    No sign-in details or API keys are needed in GatherKit. A
+                    pasted reply does not prove which provider generated it.
+                  </div>
+                </div>
+              </section>
+              <section className="grok-handoff-step grok-reply-step">
+                <span className="grok-step-number">03</span>
+                <div>
+                  <h3>Paste the reply. Review before replacing.</h3>
+                  <p>
+                    Paste the complete JSON object, including all five copy
+                    assets. Your existing drafts stay in place until you choose
+                    “Use these drafts”.
+                  </p>
+                  <label className="sr-only" htmlFor="grok-reply">
+                    Structured JSON reply from Grok Bot
+                  </label>
+                  <textarea
+                    id="grok-reply"
+                    className="grok-reply-editor"
+                    value={grokReplyText}
+                    placeholder="Paste the complete JSON reply here…"
+                    spellCheck={false}
+                    rows={7}
+                    onChange={(event) => {
+                      setGrokReplyText(event.target.value);
+                      setGrokPreview(null);
+                      setGrokError(null);
+                    }}
+                  />
+                  <div className="grok-reply-actions">
+                    <span>
+                      {grokReplyText.length.toLocaleString()} characters pasted
+                    </span>
+                    <button
+                      className="button secondary"
+                      disabled={!grokReplyText.trim()}
+                      onClick={previewGrokReply}
+                    >
+                      <FileText size={15} />
+                      Preview reply
+                    </button>
+                  </div>
+                  {grokError && (
+                    <div
+                      className="alert alert-error grok-inline-error"
+                      role="alert"
+                    >
+                      <CircleAlert size={18} />
+                      <p>{grokError}</p>
+                    </div>
+                  )}
+                  {grokPreview && (
+                    <div
+                      ref={grokPreviewRef}
+                      className="grok-preview"
+                      aria-live="polite"
+                    >
+                      <div className="grok-preview-heading">
+                        <div>
+                          <CheckCheck size={18} />
+                          <strong>
+                            {grokPreview.assets.length} copy drafts ready to
+                            review
+                          </strong>
+                        </div>
+                        <span>Matches the current event brief</span>
+                      </div>
+                      <div className="grok-preview-list">
+                        {grokPreview.assets.map((asset) => (
+                          <details key={asset.id}>
+                            <summary>
+                              <span>
+                                {pack?.assets.find(
+                                  (current) => current.id === asset.id,
+                                )?.title || asset.id}
+                              </span>
+                              <small>
+                                {asset.body.length.toLocaleString()} characters
+                              </small>
+                              <ChevronDown size={14} />
+                            </summary>
+                            <pre>{asset.body}</pre>
+                          </details>
+                        ))}
+                      </div>
+                      <p className="grok-attribution-note">
+                        {GROK_IMPORT_NOTICE} Check all details and claims before
+                        approving.
+                      </p>
+                    </div>
+                  )}
+                  {brief.sample && (
+                    <div className="fictional-note">
+                      This is a fictional community and event. Imported drafts
+                      must retain the fictional-demo warning and must not imply
+                      a live booking or invitation.
+                    </div>
+                  )}
+                </div>
+              </section>
+            </div>
+          </div>
+          <div className="modal-footer grok-modal-footer">
+            <p>
+              Using these drafts replaces all five copy assets and clears their
+              approvals. Your poster, run sheet and volunteer rota are
+              preserved.
+            </p>
+            <button
+              className="button secondary"
+              onClick={() => setDialog(null)}
+            >
+              Keep current drafts
+            </button>
+            <button
+              className="button primary"
+              disabled={!grokPreview || stale || hasErrors}
+              onClick={useGrokDrafts}
+            >
+              <ArrowRight size={16} />
+              Use these drafts
             </button>
           </div>
         </Modal>

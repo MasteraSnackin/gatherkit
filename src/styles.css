@@ -3489,3 +3489,425 @@ h1 {
 .toast-error > .icon-button:hover {
   background: #a26344;
 }
+
+/* Human-assisted Grok Bot desktop drafting handoff. */
+.promotion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.grok-handoff-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 13px 16px;
+  margin: -5px 0 22px;
+  background: #edf2e5;
+  border: 1px solid #e1e9d6;
+  border-radius: 7px;
+  color: #6c8058;
+}
+.grok-handoff-note > svg {
+  margin-top: 2px;
+}
+.grok-handoff-note p {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.75;
+  max-width: 900px;
+}
+.grok-handoff-body {
+  padding: 24px 30px 27px;
+}
+.grok-handoff-intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px 13px;
+  padding: 0 0 22px;
+  border-bottom: 1px solid #e5ebdc;
+}
+.grok-handoff-intro > span:not(.soft-tag):not(.sample-tag) {
+  font-size: 10px;
+  line-height: 1.7;
+  color: #7b8c68;
+}
+.grok-handoff-intro .soft-tag {
+  font-size: 9px;
+  color: #60794d;
+  background: #e6eedb;
+}
+.grok-handoff-steps {
+  display: grid;
+  gap: 0;
+}
+.grok-handoff-step {
+  display: grid;
+  grid-template-columns: 31px minmax(0, 1fr);
+  gap: 16px;
+  padding: 25px 0;
+  border-bottom: 1px solid #e5ebdc;
+}
+.grok-handoff-step:last-child {
+  border: 0;
+  padding-bottom: 0;
+}
+.grok-step-number {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e8efdc;
+  border: 1px solid #dae5cb;
+  color: #7b935f;
+  font-size: 10px;
+}
+.grok-handoff-step h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #536c42;
+  margin: 5px 0 9px;
+}
+.grok-handoff-step p {
+  font-size: 11px;
+  line-height: 1.85;
+  color: #7b8b6b;
+  max-width: 780px;
+  margin: 0 0 15px;
+}
+.grok-step-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 17px;
+  margin: 16px 0;
+}
+.grok-step-actions .button {
+  font-size: 10px;
+}
+.grok-step-actions .text-button {
+  font-size: 10px;
+}
+.grok-prompt-details {
+  margin-top: 12px;
+}
+.grok-prompt-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  font-size: 10px;
+  color: #81956c;
+  cursor: pointer;
+  padding: 8px 0;
+}
+.grok-prompt-details summary::-webkit-details-marker {
+  display: none;
+}
+.grok-prompt-details textarea {
+  margin-top: 10px;
+  resize: vertical;
+  background: #f6f9ef;
+  color: #71865d;
+  font:
+    10px/1.75 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+.grok-boundary-note {
+  font-size: 9px;
+  line-height: 1.8;
+  color: #8f967b;
+  padding: 12px 14px;
+  background: #f0f3e9;
+  border: 1px solid #e5eadd;
+  border-radius: 6px;
+}
+.grok-reply-editor {
+  background: #fffffc;
+  min-height: 170px;
+  resize: vertical;
+  color: #526d40;
+  font:
+    11px/1.75 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+.grok-reply-editor::placeholder {
+  color: #9dab8b;
+}
+.grok-reply-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 12px;
+}
+.grok-reply-actions > span {
+  font-size: 9px;
+  color: #93a17e;
+}
+.grok-reply-actions .button {
+  font-size: 10px;
+}
+.grok-inline-error {
+  margin: 16px 0 0;
+}
+.grok-inline-error p {
+  color: inherit;
+  margin: 0;
+  font-size: 10px;
+}
+.grok-preview {
+  margin-top: 22px;
+  border: 1px solid #dce7ce;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fffefa;
+}
+.grok-preview-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 17px;
+  background: #edf4e3;
+  border-bottom: 1px solid #e0e9d5;
+}
+.grok-preview-heading > div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #79945c;
+}
+.grok-preview-heading strong {
+  font-size: 11px;
+  font-weight: 550;
+  color: #617d4b;
+}
+.grok-preview-heading > span {
+  font-size: 9px;
+  line-height: 1.6;
+  color: #8da378;
+}
+.grok-preview-list > details {
+  border-bottom: 1px solid #e9efdf;
+}
+.grok-preview-list > details:last-child {
+  border-bottom: 0;
+}
+.grok-preview-list summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
+  padding: 14px 17px;
+  cursor: pointer;
+  color: #7a9063;
+  font-size: 10px;
+}
+.grok-preview-list summary::-webkit-details-marker {
+  display: none;
+}
+.grok-preview-list summary > span {
+  flex: 1;
+}
+.grok-preview-list summary > small {
+  font-size: 9px;
+  color: #98aa83;
+}
+.grok-preview-list pre {
+  font:
+    11px/1.85 -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+  padding: 0 17px 19px;
+  color: #6a8255;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.grok-handoff-step .grok-attribution-note {
+  border-top: 1px solid #e6ecdc;
+  background: #f6f8ef;
+  font-size: 9px;
+  color: #8d9679;
+  padding: 12px 17px;
+  margin: 0;
+  max-width: none;
+}
+.grok-reply-step .fictional-note {
+  margin-top: 16px;
+  max-width: none;
+  font-size: 9px;
+}
+.grok-modal-footer > p {
+  font-size: 9px;
+  line-height: 1.8;
+  color: #7d8e6a;
+  margin: 0 auto 0 0;
+  max-width: 490px;
+}
+@media (max-width: 1250px) {
+  .promotion-actions {
+    justify-content: flex-start;
+  }
+  .promotion-actions .button {
+    font-size: 10px;
+    padding: 10px 12px;
+  }
+}
+@media (max-width: 1020px) {
+  .section-page-heading:has(.promotion-actions) {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 17px;
+  }
+  .grok-preview-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+@media (max-width: 760px) {
+  .grok-handoff-body {
+    padding: 20px 21px 24px;
+  }
+  .grok-handoff-step {
+    gap: 12px;
+    padding: 22px 0;
+  }
+  .grok-modal-footer > p {
+    flex-basis: 100%;
+    max-width: none;
+    margin-bottom: 4px;
+  }
+  .grok-handoff-step p {
+    font-size: 10px;
+  }
+  .grok-preview-heading strong {
+    font-size: 10px;
+  }
+  .grok-preview-heading > span {
+    font-size: 8px;
+  }
+}
+@media (max-width: 480px) {
+  .grok-handoff-body {
+    padding: 19px 17px 22px;
+  }
+  .grok-handoff-intro {
+    gap: 9px;
+    padding-bottom: 18px;
+  }
+  .grok-handoff-intro > span:not(.soft-tag):not(.sample-tag) {
+    flex-basis: 100%;
+    order: 2;
+    font-size: 9px;
+  }
+  .grok-handoff-step {
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 9px;
+  }
+  .grok-step-number {
+    width: 24px;
+    height: 24px;
+    font-size: 8px;
+  }
+  .grok-handoff-step h3 {
+    font-size: 11px;
+    line-height: 1.6;
+    margin-top: 2px;
+  }
+  .grok-step-actions {
+    gap: 12px;
+  }
+  .grok-step-actions .text-button {
+    font-size: 9px;
+  }
+  .grok-step-actions .button {
+    font-size: 9px;
+    padding: 9px 11px;
+  }
+  .grok-handoff-step p {
+    font-size: 10px;
+    line-height: 1.8;
+  }
+  .grok-boundary-note {
+    font-size: 9px;
+    padding: 10px;
+  }
+  .grok-prompt-details summary {
+    font-size: 9px;
+    gap: 7px;
+  }
+  .grok-reply-editor {
+    font-size: 10px;
+    min-height: 155px;
+    padding: 10px;
+  }
+  .grok-reply-actions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .grok-reply-actions .button {
+    font-size: 9px;
+    padding: 9px 10px;
+  }
+  .grok-preview-heading {
+    padding: 13px;
+  }
+  .grok-preview-heading > div {
+    gap: 6px;
+  }
+  .grok-preview-heading svg {
+    width: 15px;
+  }
+  .grok-preview-heading strong {
+    font-size: 10px;
+  }
+  .grok-preview-list summary {
+    padding: 12px;
+    font-size: 9px;
+    gap: 6px;
+  }
+  .grok-preview-list summary > small {
+    font-size: 8px;
+  }
+  .grok-preview-list summary > svg {
+    width: 12px;
+  }
+  .grok-preview-list pre {
+    font-size: 10px;
+    padding: 0 12px 15px;
+  }
+  .grok-handoff-step .grok-attribution-note {
+    font-size: 8px;
+    padding: 11px 12px;
+  }
+  .grok-reply-step .fictional-note {
+    font-size: 8px;
+  }
+  .grok-handoff-note {
+    padding: 12px;
+    gap: 8px;
+  }
+  .grok-handoff-note p {
+    font-size: 9px;
+  }
+  .grok-modal-footer > p {
+    font-size: 9px;
+  }
+  .promotion-actions .button {
+    font-size: 9px;
+    padding: 10px 11px;
+  }
+}

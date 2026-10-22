@@ -1,4 +1,4 @@
-import type { EventBrief, EventPack } from "./types";
+import type { ContentAsset, EventBrief, EventPack } from "./types";
 import {
   calculateBudget,
   formatEventDate,
@@ -36,6 +36,18 @@ const provenance = (brief: EventBrief): string =>
   brief.sample
     ? "Fictional sample — invented community and event details for demonstration. This is not a real invitation."
     : "User-provided event details — not independently verified.";
+
+const copyOrigin = (asset: ContentAsset): string =>
+  asset.origin === "imported"
+    ? "Imported copy — provider attribution is unverified"
+    : asset.edited
+      ? "Edited by organiser"
+      : "Local template";
+
+const assemblyOrigin = (pack: EventPack): string =>
+  pack.assets.some((asset) => asset.origin === "imported")
+    ? "The event pack was assembled locally. It includes imported copy; the app has not authenticated the provider or verified the claims in that copy."
+    : "Local deterministic templates; no model or external service was called by GatherKit.";
 
 function pence(value: number): number {
   if (!Number.isFinite(value) || value < 0 || value > 10_000_000)
@@ -95,7 +107,7 @@ export function buildMarkdown(brief: EventBrief, pack: EventPack): string {
     "",
     `**Review state:** ${md(reviewSummary(pack))}`,
     "",
-    `Assembled: ${md(pack.generatedAt)}. Local deterministic templates; no model or external service was called.`,
+    `Assembled: ${md(pack.generatedAt)}. ${md(assemblyOrigin(pack))}`,
     "",
     "## Event brief",
     "",
@@ -121,7 +133,7 @@ export function buildMarkdown(brief: EventBrief, pack: EventPack): string {
     lines.push(
       `### ${md(asset.title)} (${md(asset.channel)})`,
       "",
-      `**Status: ${asset.status === "approved" ? "APPROVED" : "DRAFT"}**${asset.status === "approved" && asset.approvedAt ? ` · Reviewed ${md(asset.approvedAt)}` : ""}${asset.edited ? " · Edited by organiser" : ""}`,
+      `**Status: ${asset.status === "approved" ? "APPROVED" : "DRAFT"}**${asset.status === "approved" && asset.approvedAt ? ` · Reviewed ${md(asset.approvedAt)}` : ""} · ${md(copyOrigin(asset))}`,
       "",
       md(asset.body),
       "",
@@ -182,7 +194,7 @@ export function buildMarkdown(brief: EventBrief, pack: EventPack): string {
     "",
     "## Publication and privacy",
     "",
-    "Nothing has been posted, emailed, booked or submitted by this export. Copy remains draft unless explicitly marked approved above. Approval does not verify venue availability, prices or consent. Review contact details and volunteer names before sharing this file.",
+    "GatherKit has not posted, emailed, booked or submitted these files. Copy remains draft unless explicitly marked approved above. Approval does not verify venue availability, prices or consent. Review contact details and volunteer names before sharing this file.",
     "",
   );
   return lines.join("\n");
@@ -196,7 +208,7 @@ export function buildHtml(brief: EventBrief, pack: EventPack): string {
   const assetCards = pack.assets
     .map(
       (asset) =>
-        `<article class="asset"><div class="section-heading"><h3>${xml(asset.title)}</h3><span class="badge ${asset.status === "approved" ? "approved" : ""}">${asset.status === "approved" ? "Approved" : "Draft"}</span></div><p class="meta">${xml(asset.channel)}${asset.edited ? " · Edited by organiser" : ""}${asset.status === "approved" && asset.approvedAt ? ` · Reviewed ${xml(asset.approvedAt)}` : ""}</p><div class="copy">${paragraph(asset.body)}</div></article>`,
+        `<article class="asset"><div class="section-heading"><h3>${xml(asset.title)}</h3><span class="badge ${asset.status === "approved" ? "approved" : ""}">${asset.status === "approved" ? "Approved" : "Draft"}</span></div><p class="meta">${xml(asset.channel)} · ${xml(copyOrigin(asset))}${asset.status === "approved" && asset.approvedAt ? ` · Reviewed ${xml(asset.approvedAt)}` : ""}</p><div class="copy">${paragraph(asset.body)}</div></article>`,
     )
     .join("");
   const rows = (items: string[][]): string =>
@@ -209,7 +221,7 @@ export function buildHtml(brief: EventBrief, pack: EventPack): string {
   return `<!doctype html>
 <html lang="en-GB"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><title>${xml(brief.name)} — organiser pack</title><style>
 *{box-sizing:border-box}body{margin:0;background:#f1f0e8;color:#182b23;font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.page{max-width:980px;margin:40px auto;background:#fffef8;padding:60px;border:1px solid #d9ded3}.eyebrow{font-size:12px;font-weight:750;letter-spacing:.16em;text-transform:uppercase;color:#50664b}h1{font-size:48px;line-height:1.1;letter-spacing:-.05em;margin:14px 0 24px;overflow-wrap:anywhere}h2{font-size:25px;margin:48px 0 20px;padding-top:18px;border-top:2px solid #dce1d6;letter-spacing:-.025em}h3{font-size:19px;margin:0}.notice{border-left:4px solid #e07637;padding:14px 20px;background:#f9eadb}.meta{font-size:13px;color:#52635b}.details{display:grid;grid-template-columns:1fr 1fr;gap:14px 30px;margin:28px 0}.details dt{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#627060}.details dd{margin:3px 0 0;font-weight:600;overflow-wrap:anywhere}.asset{padding:24px;border:1px solid #dce1d6;border-radius:8px;margin:18px 0;break-inside:avoid}.section-heading{display:flex;gap:16px;align-items:center;justify-content:space-between}.badge{font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:#f9e7d5;color:#7d421f;padding:4px 10px;border-radius:30px;white-space:nowrap}.badge.approved{background:#e1ebda;color:#304a29}.copy{white-space:normal;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:14px;table-layout:fixed}th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;background:#edf0e6}td,th{padding:12px 10px;border-bottom:1px solid #dce1d6;vertical-align:top;overflow-wrap:anywhere}.totals{background:#edf0e6;padding:20px;margin:22px 0}.totals p{margin:8px 0}.footer{margin-top:48px;border-top:1px solid #dce1d6;padding-top:20px;color:#52635b;font-size:13px}p{overflow-wrap:anywhere}@media(max-width:650px){.page{margin:0;padding:28px 20px}h1{font-size:36px}.details{grid-template-columns:1fr}.section-heading{align-items:flex-start}td,th{padding:8px 5px;font-size:12px}}@media print{@page{size:A4;margin:15mm}body{background:white;font-size:10pt}.page{max-width:none;margin:0;padding:0;border:0}h1{font-size:30pt}h2{break-after:avoid;margin-top:25px}table{font-size:9pt}tr{break-inside:avoid}.asset{padding:16px}.notice,.totals,th{-webkit-print-color-adjust:exact;print-color-adjust:exact}a{color:inherit}}
-</style></head><body><main class="page"><div class="eyebrow">GatherKit · Organiser pack</div><h1>${xml(brief.name)}</h1><div class="notice">${xml(provenance(brief))}</div><p class="meta">${xml(reviewSummary(pack))}<br>Assembled ${xml(pack.generatedAt)} with local deterministic templates.</p>
+</style></head><body><main class="page"><div class="eyebrow">GatherKit · Organiser pack</div><h1>${xml(brief.name)}</h1><div class="notice">${xml(provenance(brief))}</div><p class="meta">${xml(reviewSummary(pack))}<br>Assembled ${xml(pack.generatedAt)}. ${xml(assemblyOrigin(pack))}</p>
 <h2>Event brief</h2><dl class="details">${[
     ["Community", brief.community],
     ["Date", formatEventDate(brief)],
@@ -233,7 +245,7 @@ export function buildHtml(brief: EventBrief, pack: EventPack): string {
 <h2>Run sheet</h2><table><thead><tr><th>Time</th><th>Activity</th><th>Owner</th><th>Detail</th></tr></thead><tbody>${rows(pack.runSheet.map((item) => [item.time, item.title, item.owner, item.detail]))}</tbody></table>
 <h2>Volunteer rota</h2><table><thead><tr><th>Role</th><th>Person</th><th>Task</th></tr></thead><tbody>${rows(pack.rota.map((item) => [item.role, item.person, item.task]))}</tbody></table>
 <h2>Budget · GBP</h2><table><thead><tr><th>Cost</th><th>Amount</th><th>Confirmation</th></tr></thead><tbody>${rows(b.rows.map((item) => [item.label, pounds(item.pence), item.confirmed ? "Confirmed by organiser" : "Estimate — unconfirmed"]))}</tbody></table><div class="totals"><p><strong>Total planned costs: ${pounds(b.total)}</strong></p><p>Confirmed costs: ${pounds(b.confirmed)} · Unconfirmed estimates: ${pounds(b.unconfirmed)}</p><p>Maximum ticket income: ${brief.capacity} × ${pounds(b.ticket)} = <strong>${pounds(b.revenue)}</strong></p><p>Balance at full capacity: ${pounds(b.revenue)} − ${pounds(b.total)} = <strong>${pounds(b.revenue - b.total)}</strong></p><p>Cost recovery: ${b.breakEven === null ? (b.total ? "Free tickets cannot recover these costs; funding is required." : "No planned costs.") : `${b.breakEven} paid tickets before fees${b.breakEven > brief.capacity ? " — exceeds capacity" : ""}.`}</p></div><p class="meta">Income assumes every available place is sold. Fees, taxes, refunds and other income are excluded. Planning figures are not verified spend or forecasts.</p>
-<h2>Organiser notes</h2><p>${paragraph(brief.notes || "No additional notes.")}</p><footer class="footer">Nothing has been posted, emailed, booked or submitted. Copy remains draft unless marked approved. Organiser approval does not verify venue availability, prices or consent. Review contact details and volunteer names before sharing. No live model, Notion or Ghost integration is connected.</footer></main></body></html>`;
+<h2>Organiser notes</h2><p>${paragraph(brief.notes || "No additional notes.")}</p><footer class="footer">GatherKit has not posted, emailed, booked or submitted these files. Copy remains draft unless marked approved. Organiser approval does not verify venue availability, prices or consent. Review contact details and volunteer names before sharing. Grok Bot drafting is a separate handoff. This app has no direct model API, Notion or Ghost connection.</footer></main></body></html>`;
 }
 
 /** RFC 5545 TEXT escaping, before folding complete content lines. */

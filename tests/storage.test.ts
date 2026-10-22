@@ -50,3 +50,18 @@ test("backup approval status must be a string enum, not a coercible array", () =
   unsafe.pack.assets[0].status = ["approved"];
   assert.throws(() => parseWorkspace(JSON.stringify(unsafe)));
 });
+
+test("imported-copy provenance survives backup and rejects unsupported origin claims", () => {
+  const w = createWorkspace();
+  w.pack = generatePack(w.brief);
+  w.pack.assets[0].origin = "imported";
+  assert.equal(
+    parseWorkspace(JSON.stringify(w)).pack?.assets[0].origin,
+    "imported",
+  );
+  for (const origin of ["verified-grok", ["imported"], null]) {
+    const unsafe = JSON.parse(JSON.stringify(w));
+    unsafe.pack.assets[0].origin = origin;
+    assert.throws(() => parseWorkspace(JSON.stringify(unsafe)));
+  }
+});

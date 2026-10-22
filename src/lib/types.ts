@@ -37,6 +37,7 @@ export interface ContentAsset {
   status: "draft" | "approved";
   approvedAt: string | null;
   edited: boolean;
+  origin?: "template" | "imported";
 }
 export interface RunSheetItem {
   id: string;

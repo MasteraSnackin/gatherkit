@@ -2,6 +2,8 @@
 
 One event brief. Your whole event pack.
 
+[Try the live app](https://masterasnackin.github.io/gatherkit/)
+
 Turn an organiser's event brief into an editable promotional and operations pack. Review the copy and poster, approve the assets, then download the files for your own publishing workflow.
 
 Built for the Event Autopilot track of the Grok Bot Community Engineering London Hackathon, 22 October 2026. The included demonstration uses a **fictional London community and invented event details**. It is not a real event invitation.
@@ -50,13 +52,19 @@ Approval records your review. It does not independently verify venue availabilit
 
 ## Honest integration boundary
 
-This version is a **deterministic local template engine**. It does not call a language model. It has no live Notion, Ghost, Supabase, Cognee, Zero, email or social-media integration. Partner tools listed by the hackathon are not presented as connected services.
+The event pack starts with a **deterministic local template engine**. For AI-assisted promotional copy, the app also offers a **Grok Bot desktop handoff**: copy the prepared prompt, send it to your signed-in Grok Bot, then paste its structured reply back into GatherKit. This is a human-assisted workflow, not a direct API connection from the website.
+
+The handoff includes the current event details and a source fingerprint. GatherKit rejects replies for another version of the brief, checks that all five copy assets are present, previews them, and requires an explicit replacement action. Imported copy starts as drafts with fresh approval required. The poster, run sheet and rota stay in place. Imported copy is labelled in the workspace and organiser exports; the app does not independently authenticate who generated pasted text.
+
+The organisers link to the [Grok Bot skill](https://github.com/adamanz/grok-bot-skill) for using Grok Bot from a coding agent. That optional tool uses a locally signed-in desktop session. No session material or credentials belong in this repository or the public app. You can also use Grok Bot manually with the copied prompt.
+
+The website itself makes no language-model calls. It has no live Notion, Ghost, Supabase, Cognee, Zero, email or social-media integration. Partner tools are only described as connected when a connection has actually been implemented and verified.
 
 The event pack is editable, but it does not offer live collaborative editing or account-based access control. The poster uses a fixed visual template. Long text is wrapped and may be shortened with an ellipsis; the organiser pack retains the full details. Review every exported asset before sharing it.
 
 ## Privacy and storage
 
-The running app keeps its workspace in this browser's local storage. Event details are not sent to an application server or model provider. Installing packages, loading a deployed site or opening links can still create network requests; the application is not a network isolation tool.
+The running app keeps its workspace in this browser's local storage. It does not send event details to an application server or model provider. If you choose the Grok Bot handoff, you send the copied event details to that separate service yourself; review the prompt first. Installing packages, loading a deployed site or opening links can still create network requests; the application is not a network isolation tool.
 
 Local storage belongs to the browser profile and site origin. Other people using that profile may see the workspace. Clearing browser data can remove it. Save a portable JSON backup when you need a durable copy or want to move between browsers.
 

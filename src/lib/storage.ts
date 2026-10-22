@@ -127,7 +127,10 @@ export function parseWorkspace(json: string): Workspace {
         typeof asset.status !== "string" ||
         !["draft", "approved"].includes(asset.status) ||
         !(asset.approvedAt === null || isText(asset.approvedAt)) ||
-        typeof asset.edited !== "boolean"
+        typeof asset.edited !== "boolean" ||
+        (asset.origin !== undefined &&
+          asset.origin !== "template" &&
+          asset.origin !== "imported")
       )
         return fail();
       seen.add(asset.id);

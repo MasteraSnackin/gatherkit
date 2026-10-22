@@ -100,7 +100,7 @@ test("organiser exports preserve mixed review states, provenance and budget arit
     assert.match(output, /Estimate — unconfirmed/);
     assert.match(output, /Welcome guests/);
     assert.match(output, /Help guests arrive/);
-    assert.match(output, /Nothing has been posted/);
+    assert.match(output, /GatherKit has not posted/);
   }
 });
 
@@ -347,5 +347,19 @@ test("exported ticket and budget numbers use the engine penny rounding for half-
     assert.match(output, /£11\.34/);
     assert.match(output, /£20\.16/);
     assert.doesNotMatch(output, /£10\.07/);
+  }
+});
+
+test("imported copy retains an unverified origin label in organiser exports", () => {
+  const source = brief();
+  const result = pack(source);
+  result.assets[0].origin = "imported";
+  for (const output of [
+    buildHtml(source, result),
+    buildMarkdown(source, result),
+  ]) {
+    assert.match(output, /Imported copy — provider attribution is unverified/);
+    assert.match(output, /includes imported copy/);
+    assert.doesNotMatch(output, /no model or external service was called/);
   }
 });

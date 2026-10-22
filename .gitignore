@@ -6,3 +6,6 @@ dist/
 evidence/
 *.tsbuildinfo
 .DS_Store
+demo/.hyperframes/
+demo/node_modules/
+demo/output/
